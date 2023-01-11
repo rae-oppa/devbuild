@@ -1,0 +1,40 @@
+pipeline {
+  agent any
+  environment {
+    AZURE_SUBSCRIPTION_ID='cac12505-9924-4708-99ff-243a2e777f4b'
+    AZURE_TENANT_ID='8895df5f-1e4d-4cb1-8c33-9ec96c34fe15'
+    AZURE_STORAGE_ACCOUNT='virnectjenkins'
+    AZURE_STORAGE_KEY='vEFF+rCoKxG2MRiYWImtLgU0vWEvipoihgHt/yS+h/DYJKDC+FH2fJnMgF7oVW5zqk/2iLzCaHfz+AStP58qkQ=='
+  }
+  stages {
+    stage('Build') {
+      steps {
+        sh 'rm -rf *'
+        sh 'mkdir text'
+        sh 'echo Hello Azure Storage from Jenkins > ./text/hello.txt'
+        sh 'date > ./text/date.txt'
+      }
+
+      post {
+        success {
+          withCredentials([usernamePassword(credentialsId: 'dsshin_jenkins', 
+                          passwordVariable: 'AZURE_CLIENT_SECRET', 
+                          usernameVariable: 'AZURE_CLIENT_ID')]) {
+            sh '''
+              echo $container_name
+              # Login to Azure with ServicePrincipal
+              az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET -t $AZURE_TENANT_ID
+              # Set default subscription
+              az account set --subscription $AZURE_SUBSCRIPTION_ID
+              # Execute upload to Azure
+              az storage container create --account-name $AZURE_STORAGE_ACCOUNT --name $JOB_NAME --auth-mode key --account-key $AZURE_STORAGE_KEY
+              az storage blob upload-batch --destination ${JOB_NAME} --source ./text --overwrite --account-name $AZURE_STORAGE_ACCOUNT --account-key $AZURE_STORAGE_KEY
+              # Logout from Azure
+              az logout
+            '''
+          }
+        }
+      }
+    }
+  }
+}
