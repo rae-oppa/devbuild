@@ -63,6 +63,7 @@ pipeline {
                             //sh 'docker push $ACR_LOGIN_SERVER/hello-world:v1'
                             //sh 'docker push $ACR_LOGIN_SERVER/${REPO_NAME}:${BUILD_NUMBER}'
                             sh 'docker pull virnectjenkins.azurecr.io/nginx:$BUILD_NUMBER'
+                            sh 'docker run -d -p 80:80 virnectjenkins.azurecr.io/nginx:$BUILD_NUMBER'
                         }
             }
         }
