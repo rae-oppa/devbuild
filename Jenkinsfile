@@ -62,7 +62,7 @@ pipeline {
                             //sh 'docker tag mcr.microsoft.com/hello-world $ACR_LOGIN_SERVER/hello-world:v1'
                             //sh 'docker push $ACR_LOGIN_SERVER/hello-world:v1'
                             //sh 'docker push $ACR_LOGIN_SERVER/${REPO_NAME}:${BUILD_NUMBER}'
-                            sh 'docker pull virnectjenkins.azurecr.io/nginx:19'
+                            sh 'docker pull virnectjenkins.azurecr.io/nginx:$BUILD_NUMBER'
                         }
             }
         }
