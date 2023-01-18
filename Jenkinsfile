@@ -64,10 +64,10 @@ pipeline {
                             //sh 'docker push $ACR_LOGIN_SERVER/${REPO_NAME}:${BUILD_NUMBER}'
                             sh 'docker pull virnectjenkins.azurecr.io/nginx:$BUILD_NUMBER'
                             sh 'docker run -d -p 80:80 virnectjenkins.azurecr.io/nginx:$BUILD_NUMBER'
-                            sh 'docker save -o /data/$REPO_NAME:$BUILD_NUMBER.tar $ACR_LOGIN_SERVER/$REPO_NAME:$BUILD_NUMBER'
-                            sh 'sshpass -p $passwd scp /data/nginx.tar azureuser@52.231.154.2:/home/azureuser/'
-                            sh 'sshpass -p $passwd ssh azureuser@52.231.154.2 docker load -i /home/azureuser/nginx.tar'
-                            sh 'sshpass -p $passwd ssh azureuser@52.231.154.2 docker run -d -p 80:80 nginx'
+                            sh 'docker save -o /data/$REPO_NAME.tar $ACR_LOGIN_SERVER/$REPO_NAME:$BUILD_NUMBER'
+                            sh 'sshpass -p $passwd scp /data/$REPO_NAME.tar azureuser@52.231.154.2:/home/azureuser/'
+                            sh 'sshpass -p $passwd ssh azureuser@52.231.154.2 docker load -i /home/azureuser/$REPO_NAME.tar'
+                            sh 'sshpass -p $passwd ssh azureuser@52.231.154.2 docker run -d -p 80:80 $REPO_NAME'
                         }
             }
         }
